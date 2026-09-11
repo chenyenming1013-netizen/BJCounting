@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#123D2C">
+<meta name="theme-color" content="#123D2C" id="themeColor">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>算牌紀錄器</title>
@@ -14,6 +14,7 @@
   --felt:#123D2C; --felt-deep:#0B2A1E; --felt-line:#2F6650;
   --ivory:#F6F1E4; --ink:#1A1A1A; --red:#B3261E; --gold:#E8B53A; --gold-ink:#3A2600;
   --muted:#A3C4B4;
+  --chat-bg:#8CABD9; --chat-hot:#E2A898; --bubble-me:#8DE055;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -23,19 +24,19 @@ button{font:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
 
-.modes{display:grid;grid-template-columns:1fr 1fr;background:var(--felt-deep);border-radius:999px;padding:4px}
-.modes button{border:0;background:transparent;color:var(--muted);font-size:16px;padding:10px;border-radius:999px}
+.modes{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--felt-deep);border-radius:999px;padding:4px}
+.modes button{border:0;background:transparent;color:var(--muted);font-size:16px;padding:10px 4px;border-radius:999px}
 .modes button[aria-pressed="true"]{background:var(--ivory);color:var(--ink);font-weight:600}
 
 .board{border:1.5px solid var(--felt-line);border-radius:20px;padding:12px 18px 14px;display:flex;align-items:flex-end;justify-content:space-between;transition:background-color .2s,border-color .2s,color .2s}
 .board-label{font-size:14px;color:var(--muted);margin-bottom:2px}
 .count{font-family:Georgia,"Times New Roman",serif;font-size:88px;line-height:1;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-2px}
-.meta{text-align:right;color:var(--muted);font-size:14px;line-height:1.4}
-.meta b{display:block;color:var(--ivory);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.meta-n{text-align:right;color:var(--muted);font-size:14px;line-height:1.4}
+.meta-n b{display:block;color:var(--ivory);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
 .board.hot{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
-.board.hot .board-label,.board.hot .meta,.board.hot .meta b{color:var(--gold-ink)}
+.board.hot .board-label,.board.hot .meta-n,.board.hot .meta-n b{color:var(--gold-ink)}
 
-.log{display:flex;gap:6px;overflow-x:auto;min-height:30px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.log{display:flex;gap:6px;overflow-x:auto;min-height:30px;scrollbar-width:none}
 .log::-webkit-scrollbar{display:none}
 .chip{flex:none;background:var(--felt-deep);border-radius:8px;padding:5px 9px;font-size:14px;color:var(--muted);white-space:nowrap}
 .chip b{color:var(--ivory);font-weight:600;margin-right:3px}
@@ -47,13 +48,13 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .big{border-radius:22px;font-family:Georgia,"Times New Roman",serif;font-size:72px;line-height:1;transition:transform .08s}
 .big.minus{background:var(--felt-deep);color:var(--ivory);border:1.5px solid var(--felt-line)}
 .big.plus{background:var(--ivory);color:var(--ink);border:0}
-.big small{display:block;font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;font-size:14px;margin-top:10px;opacity:1;color:inherit}
+.big small{display:block;font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;font-size:14px;margin-top:10px}
 .big.minus small{color:var(--muted)}
 .big.plus small{color:#5A5A5A}
 
 .cards{display:flex;flex-direction:column;gap:6px}
 .group-label{font-size:13px;color:var(--muted);margin:4px 0 0 2px}
-.row{display:flex;justify-content:flex-start;gap:8px}
+.row{display:flex;gap:8px}
 .card{flex:0 0 calc((100% - 32px) / 5);height:clamp(62px,11dvh,96px);background:var(--ivory);color:var(--ink);border:0;border-radius:10px;position:relative;font-family:Georgia,"Times New Roman",serif;font-size:30px;transition:transform .08s}
 .card .v{position:absolute;top:5px;left:7px;font-family:-apple-system,"PingFang TC",sans-serif;font-size:12px;font-weight:600}
 .card.plus{color:var(--red)}
@@ -66,15 +67,51 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 .flash{animation:flash .18s ease-out}
 @keyframes flash{from{transform:scale(1.06)}to{transform:scale(1)}}
+
+.chat{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--chat-bg);color:#111;transition:background-color .35s}
+.chat.hot{background:var(--chat-hot)}
+.c-head{display:flex;align-items:center;gap:2px;padding:calc(6px + env(safe-area-inset-top)) 6px 6px;background:rgba(0,0,0,.05)}
+.c-name{font-size:17px;font-weight:600;margin-left:2px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb{width:42px;height:42px;border:0;background:transparent;color:#1f2a38;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.hb:active,.ic:active{background:rgba(0,0,0,.08)}
+.hb svg,.ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.c-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 10px 16px;display:flex;flex-direction:column;gap:10px;user-select:text}
+.day{align-self:center;background:rgba(0,0,0,.16);color:#fff;font-size:12px;padding:3px 12px;border-radius:999px;margin-bottom:4px}
+.msg{display:flex;align-items:flex-end;gap:6px;animation:pop .16s ease-out}
+.msg.me{justify-content:flex-end}
+.msg.them{align-items:flex-start}
+.bubble{max-width:70vw;padding:9px 13px;border-radius:18px;font-size:16px;line-height:1.45;word-break:break-word}
+.me .bubble{background:var(--bubble-me);border-top-right-radius:5px}
+.them .bubble{background:#fff;border-top-left-radius:5px}
+.meta{font-size:11px;color:rgba(0,0,0,.5);line-height:1.3;white-space:nowrap;text-align:right}
+.them .meta{text-align:left;align-self:flex-end}
+.them-body{display:flex;flex-direction:column}
+.them-row{display:flex;align-items:flex-end;gap:6px}
+.name{font-size:12px;color:rgba(0,0,0,.6);margin:0 0 3px 2px}
+.av{width:38px;height:38px;border-radius:50%;background:#F5C9A3;color:#7A4A22;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.av.ghost{visibility:hidden;height:1px}
+.c-bar{display:flex;align-items:center;gap:4px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:#fff}
+.ic{width:50px;height:46px;border:0;background:transparent;color:#3a3f45;display:flex;align-items:center;justify-content:center;border-radius:12px;flex:none}
+.ic svg{width:26px;height:26px}
+.fake-input{flex:1;height:38px;border-radius:19px;background:#F1F2F4;color:#9AA0A6;display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;font-size:15px}
+.fake-input svg{width:20px;height:20px;stroke:#9AA0A6;fill:none;stroke-width:1.8;stroke-linecap:round}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:#fff;width:100%;border-radius:16px 16px 0 0;padding:6px 0 calc(8px + env(safe-area-inset-bottom))}
+.sheet button{display:block;width:100%;text-align:left;padding:16px 22px;border:0;background:none;font-size:16px;color:#111}
+.sheet button:active{background:#f1f1f1}
+.sheet button.danger{color:#D93025}
+.sheet hr{border:0;border-top:1px solid #eee;margin:4px 0}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-height:640px){.count{font-size:64px}.big{font-size:56px}}
 </style>
 </head>
 <body>
-<main class="app">
+<main class="app" id="counterView">
   <div class="modes" role="group" aria-label="切換模式">
     <button id="m-simple" aria-pressed="true">簡易版</button>
     <button id="m-normal" aria-pressed="false">普通版</button>
+    <button id="m-chat" aria-pressed="false">對話版</button>
   </div>
 
   <section class="board" id="board" aria-live="polite">
@@ -82,7 +119,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
       <p class="board-label" id="board-label">累積數值</p>
       <p class="count" id="count">0</p>
     </div>
-    <div class="meta">已記錄<b id="n">0</b>張</div>
+    <div class="meta-n">已記錄<b id="n">0</b>張</div>
   </section>
 
   <div class="log" id="log" aria-label="最近紀錄"><span class="empty">點下方按鈕開始記錄</span></div>
@@ -104,6 +141,31 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   </div>
 </main>
 
+<section class="chat" id="chatView" hidden>
+  <header class="c-head">
+    <button class="hb" id="c-back" aria-label="返回計數器"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="c-name">小美</div>
+    <button class="hb" aria-label="搜尋" tabindex="-1"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+    <button class="hb" aria-label="通話" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M5 4h3.5l1.5 4-2 1.5a11 11 0 005.5 5.5l1.5-2 4 1.5V18a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/></svg></button>
+    <button class="hb" id="c-menu" aria-label="選單"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <div class="c-list" id="c-list"><div class="day">今天</div></div>
+  <div class="c-bar">
+    <button class="ic" id="c-plus" aria-label="加一"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <div class="fake-input" aria-hidden="true"><span>Aa</span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 14.5c1.6 1.6 4.4 1.6 6 0M9.5 10h.01M14.5 10h.01"/></svg></div>
+    <button class="ic" id="c-minus" aria-label="減一"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+  </div>
+  <div class="sheet-bg" id="sheet" hidden>
+    <div class="sheet" role="menu">
+      <button id="s-undo">收回上一則訊息</button>
+      <button id="s-clear" class="danger">清除聊天記錄</button>
+      <button id="s-back">回到計數器</button>
+      <hr>
+      <button id="s-cancel">取消</button>
+    </div>
+  </div>
+</section>
+
 <script>
 const $ = id => document.getElementById(id);
 const groups = [
@@ -112,8 +174,13 @@ const groups = [
   {label:"+1", v:1,  cls:"plus",  ranks:["10","J","Q","K","A"]}
 ];
 let hist = [];
+let msgs = [];
+let mode = "simple";
+let lastCounterMode = "simple";
 
 const fmt = n => n > 0 ? "+" + n : n < 0 ? "−" + Math.abs(n) : "0";
+const total = () => hist.reduce((s, h) => s + h.v, 0);
+const vib = () => { if (navigator.vibrate) navigator.vibrate(12); };
 
 groups.forEach(g => {
   const lab = document.createElement("p");
@@ -133,22 +200,23 @@ groups.forEach(g => {
   $("cards").append(lab, row);
 });
 
-document.addEventListener("click", e => {
+$("counterView").addEventListener("click", e => {
   const b = e.target.closest("[data-v]");
   if (!b) return;
   hist.push({l: b.dataset.l, v: Number(b.dataset.v)});
-  if (navigator.vibrate) navigator.vibrate(12);
+  vib();
   render(true);
 });
 
 function render(pulse){
-  const c = hist.reduce((s, h) => s + h.v, 0);
+  const c = total();
   const el = $("count");
   el.textContent = fmt(c);
   if (pulse){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
   $("n").textContent = hist.length;
   const hot = c >= 10;
   $("board").classList.toggle("hot", hot);
+  $("chatView").classList.toggle("hot", hot);
   $("board-label").textContent = hot ? "已達 +10 以上" : "累積數值";
   const log = $("log");
   if (!hist.length){ log.innerHTML = '<span class="empty">點下方按鈕開始記錄</span>'; return; }
@@ -158,14 +226,138 @@ function render(pulse){
   log.scrollLeft = 0;
 }
 
-function setMode(simple){
-  $("m-simple").setAttribute("aria-pressed", simple);
-  $("m-normal").setAttribute("aria-pressed", !simple);
-  $("p-simple").hidden = !simple;
-  $("p-normal").hidden = simple;
+/* ---- 對話版：每則訊息只含一個數字，就是目前累積值 ----
+   正數：一般句子；負數：句中一定有「跌、零下、少、掉、扣、降」；0：直接寫 0 */
+const TIME = [
+  n => `今天${n}點吃飯？`, n => `明天${n}點見`, n => `${n}點開會別忘了`,
+  n => `我大概${n}點到`, n => `晚上${n}點打給你`, n => `${n}點那班車可以嗎`
+];
+const POS = [
+  n => `我在${n}號出口等你`, n => `排了${n}分鐘才買到`, n => `訂位${n}位可以嗎`,
+  n => `已經追到第${n}集了`, n => `我們坐${n}號桌`, n => `現在外面${n}度`,
+  n => `電梯停在${n}樓`, n => `${n}分鐘後到`, n => `團購算我${n}份`,
+  n => `這週跑了${n}公里`, n => `買了${n}杯飲料`, n => `群組有${n}個人要來`
+];
+const NEG = [
+  n => `股票又跌了${n}%`, n => `山上零下${n}度好冷`, n => `這個月少賺${n}萬`,
+  n => `體重掉了${n}公斤`, n => `又被扣${n}分`, n => `比上次少${n}個人`,
+  n => `溫度降了${n}度`, n => `油價跌${n}毛`, n => `報名少了${n}位`
+];
+const ZERO = [
+  () => `今天喝了0杯水`, () => `手機電量剩0%了`, () => `目前0個人回覆`,
+  () => `今天運動時間0分鐘`, () => `未讀信件0封，舒服`
+];
+const TAILS = ["", "", "", "～", "！", " 😂", " 👍", " 🙏", "耶", "喔"];
+let lastFn = null;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+function makeText(c){
+  let pool;
+  if (c === 0) pool = ZERO;
+  else if (c < 0) pool = NEG;
+  else pool = c <= 12 ? POS.concat(TIME, TIME) : POS;
+  let fn, tries = 0;
+  do { fn = pick(pool); tries++; } while (fn === lastFn && tries < 8);
+  lastFn = fn;
+  let t = fn(Math.abs(c));
+  if (!/[？！]$/.test(t)) t += pick(TAILS);
+  return t;
 }
-$("m-simple").onclick = () => setMode(true);
-$("m-normal").onclick = () => setMode(false);
+
+function nowText(){
+  const d = new Date(), h = d.getHours(), m = String(d.getMinutes()).padStart(2, "0");
+  return (h < 12 ? "上午 " : "下午 ") + (h % 12 || 12) + ":" + m;
+}
+
+function msgEl(m, prev){
+  const d = document.createElement("div");
+  const b = document.createElement("div");
+  b.className = "bubble";
+  b.textContent = m.text;
+  if (m.me){
+    d.className = "msg me";
+    d.innerHTML = '<div class="meta">已讀<br>' + m.time + '</div>';
+    d.appendChild(b);
+  } else {
+    const first = !(prev && !prev.me);
+    d.className = "msg them";
+    d.innerHTML = '<div class="av' + (first ? '' : ' ghost') + '">美</div><div class="them-body">' +
+      (first ? '<div class="name">小美</div>' : '') + '<div class="them-row"></div></div>';
+    const row = d.querySelector(".them-row");
+    row.appendChild(b);
+    row.insertAdjacentHTML("beforeend", '<div class="meta">' + m.time + '</div>');
+  }
+  return d;
+}
+
+function addMsg(c){
+  const m = {text: makeText(c), me: Math.random() < 0.5, time: nowText(), c};
+  const prev = msgs[msgs.length - 1];
+  msgs.push(m);
+  const list = $("c-list");
+  list.appendChild(msgEl(m, prev));
+  list.scrollTop = list.scrollHeight;
+}
+
+function syncChat(){
+  const shown = msgs.length ? msgs[msgs.length - 1].c : 0;
+  if (shown !== total()) addMsg(total());
+}
+
+function chatStep(v){
+  hist.push({l: "", v});
+  vib();
+  render(false);
+  addMsg(total());
+}
+$("c-plus").onclick = () => chatStep(1);
+$("c-minus").onclick = () => chatStep(-1);
+
+function undoLast(){
+  hist.pop();
+  if (msgs.length){ msgs.pop(); $("c-list").lastElementChild.remove(); }
+  render(false);
+  syncChat();
+}
+function clearAll(){
+  hist = []; msgs = []; lastFn = null;
+  $("c-list").innerHTML = '<div class="day">今天</div>';
+  render(false);
+}
+
+/* ---- 選單 ---- */
+const sheet = $("sheet");
+let clearArmed = false;
+function closeSheet(){ sheet.hidden = true; clearArmed = false; $("s-clear").textContent = "清除聊天記錄"; }
+$("c-menu").onclick = () => { sheet.hidden = false; };
+sheet.onclick = e => { if (e.target === sheet) closeSheet(); };
+$("s-cancel").onclick = closeSheet;
+$("s-undo").onclick = () => { undoLast(); closeSheet(); };
+$("s-clear").onclick = () => {
+  if (!clearArmed){ clearArmed = true; $("s-clear").textContent = "再按一次確認清除"; return; }
+  clearAll(); closeSheet();
+};
+$("s-back").onclick = () => { closeSheet(); setMode(lastCounterMode); };
+$("c-back").onclick = () => setMode(lastCounterMode);
+
+/* ---- 模式切換 ---- */
+function setMode(m){
+  mode = m;
+  const chat = m === "chat";
+  if (!chat) lastCounterMode = m;
+  ["simple", "normal", "chat"].forEach(k => $("m-" + k).setAttribute("aria-pressed", k === m));
+  $("p-simple").hidden = m !== "simple";
+  $("p-normal").hidden = m !== "normal";
+  $("counterView").hidden = chat;
+  $("chatView").hidden = !chat;
+  document.title = chat ? "小美" : "算牌紀錄器";
+  $("themeColor").content = chat ? "#8CABD9" : "#123D2C";
+  window.history.replaceState(null, "", chat ? "#chat" : location.pathname + location.search);
+  if (chat){ syncChat(); const l = $("c-list"); l.scrollTop = l.scrollHeight; }
+}
+$("m-simple").onclick = () => setMode("simple");
+$("m-normal").onclick = () => setMode("normal");
+$("m-chat").onclick = () => setMode("chat");
 
 $("undo").onclick = () => { hist.pop(); render(false); };
 
@@ -175,13 +367,15 @@ $("reset").onclick = function(){
     clearTimeout(armTimer);
     this.classList.remove("arm");
     this.textContent = "全部重設";
-    hist = []; render(false);
+    clearAll();
   } else {
     this.classList.add("arm");
     this.textContent = "再按一次確認";
     armTimer = setTimeout(() => { this.classList.remove("arm"); this.textContent = "全部重設"; }, 2500);
   }
 };
+
+if (location.hash === "#chat") setMode("chat");
 </script>
 </body>
 </html>
