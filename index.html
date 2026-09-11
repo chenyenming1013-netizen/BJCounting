@@ -24,8 +24,8 @@ button{font:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
 
-.modes{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--felt-deep);border-radius:999px;padding:4px}
-.modes button{border:0;background:transparent;color:var(--muted);font-size:16px;padding:10px 4px;border-radius:999px}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);background:var(--felt-deep);border-radius:999px;padding:4px}
+.modes button{border:0;background:transparent;color:var(--muted);font-size:15px;padding:10px 4px;border-radius:999px}
 .modes button[aria-pressed="true"]{background:var(--ivory);color:var(--ink);font-weight:600}
 
 .board{border:1.5px solid var(--felt-line);border-radius:20px;padding:12px 18px 14px;display:flex;align-items:flex-end;justify-content:space-between;transition:background-color .2s,border-color .2s,color .2s}
@@ -101,6 +101,41 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .sheet button:active{background:#f1f1f1}
 .sheet button.danger{color:#D93025}
 .sheet hr{border:0;border-top:1px solid #eee;margin:4px 0}
+.fb{position:fixed;inset:0;display:flex;flex-direction:column;background:#F0F2F5;color:#050505;overflow:hidden}
+.fb-top{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px 16px;background:#fff;transition:background-color .35s}
+.fb.hot .fb-top{background:#FFE1CC}
+.fb-title{flex:1;font-size:25px;font-weight:700;color:#1877F2;letter-spacing:-.5px}
+.fb-ib{width:40px;height:40px;border-radius:50%;background:#E4E6EB;border:0;display:flex;align-items:center;justify-content:center;color:#050505;flex:none}
+.fb-ib svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fb-feed{flex:1;min-height:0;padding-top:8px;touch-action:none;overflow:hidden}
+.post{background:#fff;will-change:transform}
+.post.peek{margin-top:8px}
+.p-head{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+.p-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:600;flex:none}
+.p-name{font-size:15px;font-weight:600}
+.p-sub{font-size:13px;color:#65676B}
+.p-more{margin-left:auto;color:#65676B;font-size:20px;letter-spacing:1px}
+.p-text{padding:0 14px 10px;font-size:15px;line-height:1.4}
+.ph{position:relative;width:100%;height:min(100vw,calc(100dvh - 300px));overflow:hidden}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-touch-callout:none}
+.p-react{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:14px;color:#65676B;border-bottom:1px solid #E4E6EB}
+.p-acts{display:grid;grid-template-columns:repeat(3,1fr);padding:2px 6px}
+.p-acts span{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0;font-size:15px;color:#65676B;font-weight:600}
+.p-acts svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fb.hot .p-acts .like{color:#1877F2}
+.fb.hot .p-acts .like svg{fill:#1877F2}
+.ov{position:absolute;display:flex;align-items:center;justify-content:center;font-family:-apple-system,"Helvetica Neue",Arial,"PingFang TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ov-scrim{inset:0;background:rgba(0,0,0,.3)}
+.ov-big{inset:0;flex-direction:column;color:#fff;font-size:min(24vw,120px);font-weight:800;line-height:1;letter-spacing:-2px;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.ov-big small{font-size:20px;font-weight:600;letter-spacing:3px;margin-bottom:8px}
+.ov-glass{left:14px;top:14px;flex-direction:column;align-items:flex-start;background:rgba(0,0,0,.52);color:#fff;border-radius:18px;padding:10px 18px}
+.ov-glass small{font-size:13px;opacity:.9}
+.ov-glass b{font-size:46px;line-height:1.1}
+.ov-card{left:14px;right:14px;bottom:14px;justify-content:space-between;background:#fff;color:#111;border-radius:14px;padding:10px 18px;font-size:15px}
+.ov-card b{font-size:36px}
+.ov-pill{right:14px;bottom:14px;border-radius:999px;padding:10px 22px;font-size:34px;font-weight:800;color:#fff}
+.ov-clock{left:50%;top:50%;transform:translate(-50%,-50%);background:#111;color:#FF5A36;border-radius:14px;padding:12px 24px;font-size:64px;font-weight:700;font-family:"Courier New",monospace}
+.ov-circle{left:50%;top:50%;transform:translate(-50%,-50%);width:min(52vw,220px);height:min(52vw,220px);border-radius:50%;background:#fff;border:14px solid #D93025;color:#111;font-size:min(20vw,92px);font-weight:800}
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-height:640px){.count{font-size:64px}.big{font-size:56px}}
@@ -112,6 +147,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <button id="m-simple" aria-pressed="true">簡易版</button>
     <button id="m-normal" aria-pressed="false">普通版</button>
     <button id="m-chat" aria-pressed="false">對話版</button>
+    <button id="m-fb" aria-pressed="false">臉書版</button>
   </div>
 
   <section class="board" id="board" aria-live="polite">
@@ -162,6 +198,25 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
       <button id="s-back">回到計數器</button>
       <hr>
       <button id="s-cancel">取消</button>
+    </div>
+  </div>
+</section>
+
+<section class="fb" id="fbView" hidden>
+  <header class="fb-top">
+    <div class="fb-title">動態</div>
+    <button class="fb-ib" aria-label="搜尋" tabindex="-1"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+    <button class="fb-ib" aria-label="訊息" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M12 3.5c-4.8 0-8.5 3.4-8.5 7.8 0 2.4 1.1 4.5 2.9 5.9V21l3.2-1.8c.8.2 1.6.3 2.4.3 4.8 0 8.5-3.4 8.5-7.8S16.8 3.5 12 3.5z"/></svg></button>
+    <button class="fb-ib" id="f-menu" aria-label="選單"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <div class="fb-feed" id="fb-feed"><article class="post" id="fb-post"></article><article class="post peek" id="fb-next" aria-hidden="true"></article></div>
+  <div class="sheet-bg" id="f-sheet" hidden>
+    <div class="sheet" role="menu">
+      <button id="f-undo">復原上一步</button>
+      <button id="f-clear" class="danger">清除重來</button>
+      <button id="f-back">回到計數器</button>
+      <hr>
+      <button id="f-cancel">取消</button>
     </div>
   </div>
 </section>
@@ -217,6 +272,7 @@ function render(pulse){
   const hot = c >= 10;
   $("board").classList.toggle("hot", hot);
   $("chatView").classList.toggle("hot", hot);
+  $("fbView").classList.toggle("hot", hot);
   $("board-label").textContent = hot ? "已達 +10 以上" : "累積數值";
   const log = $("log");
   if (!hist.length){ log.innerHTML = '<span class="empty">點下方按鈕開始記錄</span>'; return; }
@@ -340,24 +396,165 @@ $("s-clear").onclick = () => {
 $("s-back").onclick = () => { closeSheet(); setMode(lastCounterMode); };
 $("c-back").onclick = () => setMode(lastCounterMode);
 
+/* ---- 臉書版：上滑 +1、下滑 −1；圖片裡的數字就是目前累積值
+   規則：數字前面有「−」就是負數，沒有就是正數或 0 ---- */
+const sg = (c, plus) => c > 0 ? (plus ? "+" + c : String(c)) : c < 0 ? "−" + (-c) : "0";
+const STYLES = [
+  {ok: c => true, html: c => `<div class="ov ov-glass"><small>${c < 0 ? "❄️" : "☀️"} 現在氣溫</small><b>${sg(c)}°C</b></div>`,
+   cap: ["今天出門記得看天氣", "這天氣也太誇張了吧", "週末出去走走", "早晚溫差好大"]},
+  {ok: c => true, html: c => `<div class="ov ov-card"><span>今日漲跌</span><b style="color:${c > 0 ? "#1E8E3E" : c < 0 ? "#D93025" : "#555"}">${c > 0 ? "▲ " : c < 0 ? "▼ " : ""}${sg(c)}%</b></div>`,
+   cap: ["今天盤面好刺激", "存股日記", "看盤看到眼睛好痠", "投資要有耐心"]},
+  {ok: c => c !== 0, html: c => `<div class="ov ov-pill" style="background:${c < 0 ? "#1E8E3E" : "#E8710A"}">${sg(c, true)} kg</div>`,
+   cap: ["減重日記", "健身房報到", "飲控真的好難", "今天也有乖乖運動"]},
+  {ok: c => c !== 0, html: c => `<div class="ov ov-glass"><small>⛳ 相對標準桿</small><b>${sg(c, true)}</b></div>`,
+   cap: ["揮桿日", "球場天氣超好", "練習場報到"]},
+  {ok: c => c > 0, html: c => `<div class="ov ov-scrim"></div><div class="ov ov-big"><small>DAY</small>${c}</div>`,
+   cap: ["挑戰打卡", "堅持下去", "每天進步一點點", "早起打卡成功"]},
+  {ok: c => c >= 1 && c <= 12, html: c => `<div class="ov ov-clock">${c}:00</div>`,
+   cap: ["準時赴約", "等人中", "今天的行程", "鬧鐘響了"]},
+  {ok: c => c > 0, html: c => `<div class="ov ov-card"><span>▲ 樓層</span><b>${c}F</b></div>`,
+   cap: ["新辦公室", "看房中", "這層景觀不錯"]},
+  {ok: c => c > 0, html: c => `<div class="ov ov-circle">${c}</div>`,
+   cap: ["今天去兜風", "路上小心", "騎車出去晃晃"]},
+  {ok: c => c >= 0, html: c => `<div class="ov ov-card"><span>🔋 電量</span><b>${c}%</b></div>`,
+   cap: ["手機快沒電", "出門忘記充電", "行動電源救我"]},
+  {ok: c => c > 0, html: c => `<div class="ov ov-scrim"></div><div class="ov ov-big"><small>生日快樂</small>${c}</div>`,
+   cap: ["謝謝大家的祝福", "生日快樂", "又長大一歲"]},
+  {ok: c => c > 0, html: c => `<div class="ov ov-pill" style="background:#D93025">倒數 ${c} 天</div>`,
+   cap: ["好期待", "快到了", "倒數中"]},
+  {ok: c => c < 0, html: c => `<div class="ov ov-glass"><small>🤿 潛水深度</small><b>${sg(c)} m</b></div>`,
+   cap: ["潛水日記", "海底好美", "第一次深潛"]},
+  {ok: c => c !== 0, html: c => `<div class="ov ov-card"><span>比賽得分</span><b>${sg(c, true)} 分</b></div>`,
+   cap: ["今天的比賽", "運動會", "小考結果出爐"]}
+];
+const NAMES = [["林怡君","#E4405F"],["陳志明","#1877F2"],["王小美","#F5A623"],["張家豪","#2BA84A"],["李佳穎","#8E44AD"],
+  ["黃俊傑","#16A085"],["吳雅婷","#D35400"],["劉建宏","#2C3E50"],["蔡宜蓁","#C0392B"],["許文彥","#2980B9"]];
+const CAP_TAILS = ["", "", " ✨", " 😊", " 🙌", "！", "～"];
+const ICON_LIKE = '<svg viewBox="0 0 24 24"><path d="M7 11v9H4v-9h3zm0 0l4-7c1.3 0 2 .9 2 2v3h5.5a2 2 0 012 2.3l-1.2 6A2 2 0 0117.3 20H7"/></svg>';
+const ICON_CMT = '<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>';
+const ICON_SHARE = '<svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7v-4c-5 0-8 1.5-10 5 .5-5 3-10 10-11z"/></svg>';
+const photoURL = s => `https://picsum.photos/seed/bjc${s}/700/700`;
+const randSeed = () => 1 + Math.floor(Math.random() * 100);
+let photoQ = null, lastStyle = null;
+const preloaded = [];
+function preload(s){ const i = new Image(); i.src = photoURL(s); preloaded.push(i); if (preloaded.length > 6) preloaded.shift(); }
+function nextPhoto(){
+  if (!photoQ){ photoQ = []; while (photoQ.length < 3){ const n = randSeed(); if (!photoQ.includes(n)) photoQ.push(n); } photoQ.forEach(preload); }
+  const s = photoQ.shift();
+  let n; do { n = randSeed(); } while (n === s || photoQ.includes(n));
+  photoQ.push(n); preload(n);
+  return s;
+}
+const PEEK_CAPS = ["分享一下今天的午餐", "好久沒出來走走了", "這家店推薦給大家", "週末的小確幸", "路邊隨手拍", "今天的天空好美"];
+function peekHTML(){
+  const nm = pick(NAMES), hue = Math.floor(Math.random() * 360);
+  return `<div class="p-head"><div class="p-av" style="background:${nm[1]}">${nm[0][0]}</div>` +
+    `<div><div class="p-name">${nm[0]}</div><div class="p-sub">剛剛 · 🌐</div></div><div class="p-more">···</div></div>` +
+    `<div class="p-text">${pick(PEEK_CAPS)}</div>` +
+    `<div class="ph" style="background:hsl(${hue} 30% 70%)"><img src="${photoURL(nextPhoto())}" alt="" draggable="false" onerror="this.remove()"></div>`;
+}
+function postHTML(c){
+  const pool = STYLES.filter(st => st.ok(c));
+  let st, tries = 0;
+  do { st = pick(pool); tries++; } while (st === lastStyle && pool.length > 1 && tries < 8);
+  lastStyle = st;
+  const nm = pick(NAMES);
+  const hue = Math.floor(Math.random() * 360);
+  return `<div class="p-head"><div class="p-av" style="background:${nm[1]}">${nm[0][0]}</div>` +
+    `<div><div class="p-name">${nm[0]}</div><div class="p-sub">剛剛 · 🌐</div></div><div class="p-more">···</div></div>` +
+    `<div class="p-text">${pick(st.cap)}${pick(CAP_TAILS)}</div>` +
+    `<div class="ph" style="background:hsl(${hue} 30% 70%)"><img src="${photoURL(nextPhoto())}" alt="" draggable="false" onerror="this.remove()">${st.html(c)}</div>` +
+    `<div class="p-react"><span>👍❤️</span>你和其他朋友</div>` +
+    `<div class="p-acts"><span class="like">${ICON_LIKE}讚</span><span>${ICON_CMT}留言</span><span>${ICON_SHARE}分享</span></div>`;
+}
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function showPost(dir){
+  const el = $("fb-post");
+  const html = postHTML(total());
+  const peek = $("fb-next");
+  el.getAnimations().forEach(a => a.cancel());
+  if (!dir || reduceMotion){ el.innerHTML = html; el.style.transform = ""; peek.innerHTML = peekHTML(); return; }
+  const off = dir === "up" ? -1 : 1;
+  const from = el.style.transform || "translateY(0)";
+  const out = el.animate([{transform: from, opacity: 1}, {transform: `translateY(${off * 90}px)`, opacity: 0}], {duration: 120, easing: "ease-in"});
+  out.onfinish = () => {
+    el.innerHTML = html;
+    peek.innerHTML = peekHTML();
+    el.style.transform = "";
+    el.animate([{transform: `translateY(${-off * 90}px)`, opacity: 0}, {transform: "translateY(0)", opacity: 1}], {duration: 180, easing: "ease-out"});
+  };
+}
+function fbStep(v, dir){
+  hist.push({l: "", v});
+  vib();
+  render(false);
+  showPost(dir);
+}
+const feed = $("fb-feed");
+let ty = null, tx = 0;
+feed.addEventListener("touchstart", e => {
+  if (e.touches.length > 1){ ty = null; return; }
+  ty = e.touches[0].clientY; tx = e.touches[0].clientX;
+}, {passive: true});
+feed.addEventListener("touchmove", e => {
+  e.preventDefault();
+  if (ty === null) return;
+  $("fb-post").style.transform = `translateY(${(e.touches[0].clientY - ty) * 0.35}px)`;
+}, {passive: false});
+function endTouch(e){
+  if (ty === null) return;
+  const t = e.changedTouches[0], dy = t.clientY - ty, dx = t.clientX - tx;
+  ty = null;
+  if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx)){ dy < 0 ? fbStep(1, "up") : fbStep(-1, "down"); return; }
+  const el = $("fb-post"), from = el.style.transform;
+  el.style.transform = "";
+  if (from && !reduceMotion) el.animate([{transform: from}, {transform: "translateY(0)"}], {duration: 150, easing: "ease-out"});
+}
+feed.addEventListener("touchend", endTouch);
+feed.addEventListener("touchcancel", e => { ty = null; $("fb-post").style.transform = ""; });
+let wheelLock = 0;
+feed.addEventListener("wheel", e => {
+  e.preventDefault();
+  const now = Date.now();
+  if (now < wheelLock || Math.abs(e.deltaY) < 15) return;
+  wheelLock = now + 450;
+  e.deltaY > 0 ? fbStep(1, "up") : fbStep(-1, "down");
+}, {passive: false});
+
+const fSheet = $("f-sheet");
+let fClearArmed = false;
+function closeFSheet(){ fSheet.hidden = true; fClearArmed = false; $("f-clear").textContent = "清除重來"; }
+$("f-menu").onclick = () => { fSheet.hidden = false; };
+fSheet.onclick = e => { if (e.target === fSheet) closeFSheet(); };
+$("f-cancel").onclick = closeFSheet;
+$("f-undo").onclick = () => { hist.pop(); render(false); showPost(null); closeFSheet(); };
+$("f-clear").onclick = () => {
+  if (!fClearArmed){ fClearArmed = true; $("f-clear").textContent = "再按一次確認清除"; return; }
+  clearAll(); showPost(null); closeFSheet();
+};
+$("f-back").onclick = () => { closeFSheet(); setMode(lastCounterMode); };
+
 /* ---- 模式切換 ---- */
 function setMode(m){
   mode = m;
-  const chat = m === "chat";
-  if (!chat) lastCounterMode = m;
-  ["simple", "normal", "chat"].forEach(k => $("m-" + k).setAttribute("aria-pressed", k === m));
+  const chat = m === "chat", fb = m === "fb";
+  if (!chat && !fb) lastCounterMode = m;
+  ["simple", "normal", "chat", "fb"].forEach(k => $("m-" + k).setAttribute("aria-pressed", k === m));
   $("p-simple").hidden = m !== "simple";
   $("p-normal").hidden = m !== "normal";
-  $("counterView").hidden = chat;
+  $("counterView").hidden = chat || fb;
   $("chatView").hidden = !chat;
-  document.title = chat ? "小美" : "算牌紀錄器";
-  $("themeColor").content = chat ? "#8CABD9" : "#123D2C";
-  window.history.replaceState(null, "", chat ? "#chat" : location.pathname + location.search);
+  $("fbView").hidden = !fb;
+  document.title = chat ? "小美" : fb ? "動態" : "算牌紀錄器";
+  $("themeColor").content = chat ? "#8CABD9" : fb ? "#FFFFFF" : "#123D2C";
+  window.history.replaceState(null, "", chat ? "#chat" : fb ? "#fb" : location.pathname + location.search);
   if (chat){ syncChat(); const l = $("c-list"); l.scrollTop = l.scrollHeight; }
+  if (fb) showPost(null);
 }
 $("m-simple").onclick = () => setMode("simple");
 $("m-normal").onclick = () => setMode("normal");
 $("m-chat").onclick = () => setMode("chat");
+$("m-fb").onclick = () => setMode("fb");
 
 $("undo").onclick = () => { hist.pop(); render(false); };
 
@@ -376,6 +573,7 @@ $("reset").onclick = function(){
 };
 
 if (location.hash === "#chat") setMode("chat");
+else if (location.hash === "#fb") setMode("fb");
 </script>
 </body>
 </html>
