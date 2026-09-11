@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#123D2C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>算牌紀錄器</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23123D2C'/%3E%3Crect x='18' y='12' width='28' height='40' rx='5' fill='%23F6F1E4'/%3E%3Ctext x='32' y='40' font-family='Georgia' font-size='20' text-anchor='middle' fill='%23B3261E'%3EA%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --felt:#123D2C; --felt-deep:#0B2A1E; --felt-line:#2F6650;
+  --ivory:#F6F1E4; --ink:#1A1A1A; --red:#B3261E; --gold:#E8B53A; --gold-ink:#3A2600;
+  --muted:#A3C4B4;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--felt);color:var(--ivory);font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;touch-action:manipulation;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+
+.modes{display:grid;grid-template-columns:1fr 1fr;background:var(--felt-deep);border-radius:999px;padding:4px}
+.modes button{border:0;background:transparent;color:var(--muted);font-size:16px;padding:10px;border-radius:999px}
+.modes button[aria-pressed="true"]{background:var(--ivory);color:var(--ink);font-weight:600}
+
+.board{border:1.5px solid var(--felt-line);border-radius:20px;padding:12px 18px 14px;display:flex;align-items:flex-end;justify-content:space-between;transition:background-color .2s,border-color .2s,color .2s}
+.board-label{font-size:14px;color:var(--muted);margin-bottom:2px}
+.count{font-family:Georgia,"Times New Roman",serif;font-size:88px;line-height:1;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-2px}
+.meta{text-align:right;color:var(--muted);font-size:14px;line-height:1.4}
+.meta b{display:block;color:var(--ivory);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.board.hot{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.board.hot .board-label,.board.hot .meta,.board.hot .meta b{color:var(--gold-ink)}
+
+.log{display:flex;gap:6px;overflow-x:auto;min-height:30px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.log::-webkit-scrollbar{display:none}
+.chip{flex:none;background:var(--felt-deep);border-radius:8px;padding:5px 9px;font-size:14px;color:var(--muted);white-space:nowrap}
+.chip b{color:var(--ivory);font-weight:600;margin-right:3px}
+.chip:first-child{outline:1.5px solid var(--felt-line)}
+.empty{font-size:14px;color:var(--muted);padding:5px 0}
+
+.panel{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.simple{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:200px}
+.big{border-radius:22px;font-family:Georgia,"Times New Roman",serif;font-size:72px;line-height:1;transition:transform .08s}
+.big.minus{background:var(--felt-deep);color:var(--ivory);border:1.5px solid var(--felt-line)}
+.big.plus{background:var(--ivory);color:var(--ink);border:0}
+.big small{display:block;font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;font-size:14px;margin-top:10px;opacity:1;color:inherit}
+.big.minus small{color:var(--muted)}
+.big.plus small{color:#5A5A5A}
+
+.cards{display:flex;flex-direction:column;gap:6px}
+.group-label{font-size:13px;color:var(--muted);margin:4px 0 0 2px}
+.row{display:flex;justify-content:flex-start;gap:8px}
+.card{flex:0 0 calc((100% - 32px) / 5);height:clamp(62px,11dvh,96px);background:var(--ivory);color:var(--ink);border:0;border-radius:10px;position:relative;font-family:Georgia,"Times New Roman",serif;font-size:30px;transition:transform .08s}
+.card .v{position:absolute;top:5px;left:7px;font-family:-apple-system,"PingFang TC",sans-serif;font-size:12px;font-weight:600}
+.card.plus{color:var(--red)}
+.card.zero{background:#DCD6C6;color:#55524A}
+.big:active,.card:active{transform:scale(.95)}
+
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tools button{background:transparent;border:1.5px solid var(--felt-line);color:var(--ivory);font-size:16px;padding:14px;border-radius:14px}
+.tools button.arm{background:var(--red);border-color:var(--red)}
+
+.flash{animation:flash .18s ease-out}
+@keyframes flash{from{transform:scale(1.06)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-height:640px){.count{font-size:64px}.big{font-size:56px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="modes" role="group" aria-label="切換模式">
+    <button id="m-simple" aria-pressed="true">簡易版</button>
+    <button id="m-normal" aria-pressed="false">普通版</button>
+  </div>
+
+  <section class="board" id="board" aria-live="polite">
+    <div>
+      <p class="board-label" id="board-label">累積數值</p>
+      <p class="count" id="count">0</p>
+    </div>
+    <div class="meta">已記錄<b id="n">0</b>張</div>
+  </section>
+
+  <div class="log" id="log" aria-label="最近紀錄"><span class="empty">點下方按鈕開始記錄</span></div>
+
+  <section class="panel" id="p-simple">
+    <div class="simple">
+      <button class="big minus" data-v="-1" data-l="">−1<small>2 – 6</small></button>
+      <button class="big plus" data-v="1" data-l="">+1<small>10 J Q K A</small></button>
+    </div>
+  </section>
+
+  <section class="panel" id="p-normal" hidden>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <div class="tools">
+    <button id="undo">復原上一張</button>
+    <button id="reset">全部重設</button>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const groups = [
+  {label:"−1", v:-1, cls:"minus", ranks:["2","3","4","5","6"]},
+  {label:"0",  v:0,  cls:"zero",  ranks:["7","8","9"]},
+  {label:"+1", v:1,  cls:"plus",  ranks:["10","J","Q","K","A"]}
+];
+let hist = [];
+
+const fmt = n => n > 0 ? "+" + n : n < 0 ? "−" + Math.abs(n) : "0";
+
+groups.forEach(g => {
+  const lab = document.createElement("p");
+  lab.className = "group-label";
+  lab.textContent = g.label;
+  const row = document.createElement("div");
+  row.className = "row";
+  g.ranks.forEach(r => {
+    const b = document.createElement("button");
+    b.className = "card " + g.cls;
+    b.dataset.v = g.v;
+    b.dataset.l = r;
+    b.setAttribute("aria-label", r + "，" + g.label);
+    b.innerHTML = '<span class="v">' + g.label + '</span>' + r;
+    row.appendChild(b);
+  });
+  $("cards").append(lab, row);
+});
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-v]");
+  if (!b) return;
+  hist.push({l: b.dataset.l, v: Number(b.dataset.v)});
+  if (navigator.vibrate) navigator.vibrate(12);
+  render(true);
+});
+
+function render(pulse){
+  const c = hist.reduce((s, h) => s + h.v, 0);
+  const el = $("count");
+  el.textContent = fmt(c);
+  if (pulse){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+  $("n").textContent = hist.length;
+  const hot = c >= 10;
+  $("board").classList.toggle("hot", hot);
+  $("board-label").textContent = hot ? "已達 +10 以上" : "累積數值";
+  const log = $("log");
+  if (!hist.length){ log.innerHTML = '<span class="empty">點下方按鈕開始記錄</span>'; return; }
+  log.innerHTML = hist.slice(-30).reverse().map(h =>
+    '<span class="chip">' + (h.l ? '<b>' + h.l + '</b>' : '') + fmt(h.v) + '</span>'
+  ).join("");
+  log.scrollLeft = 0;
+}
+
+function setMode(simple){
+  $("m-simple").setAttribute("aria-pressed", simple);
+  $("m-normal").setAttribute("aria-pressed", !simple);
+  $("p-simple").hidden = !simple;
+  $("p-normal").hidden = simple;
+}
+$("m-simple").onclick = () => setMode(true);
+$("m-normal").onclick = () => setMode(false);
+
+$("undo").onclick = () => { hist.pop(); render(false); };
+
+let armTimer;
+$("reset").onclick = function(){
+  if (this.classList.contains("arm")){
+    clearTimeout(armTimer);
+    this.classList.remove("arm");
+    this.textContent = "全部重設";
+    hist = []; render(false);
+  } else {
+    this.classList.add("arm");
+    this.textContent = "再按一次確認";
+    armTimer = setTimeout(() => { this.classList.remove("arm"); this.textContent = "全部重設"; }, 2500);
+  }
+};
+</script>
+</body>
+</html>
